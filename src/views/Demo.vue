@@ -9,10 +9,15 @@
         </div>
           <Button @click="test">测试</Button>
         <div class="big" :style="{height: bigger ? '800px' : 'auto'}"></div>
+        <Row>
+          <Col span="4">1111</Col>
+          <Col span="20">3333</Col>
+        </Row>
     </div>
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -21,14 +26,14 @@ export default {
   },
   computed: {
     currentWeather() {
-      return this.$store.state.demo.WEATHER;
+      return this.$store.state.WEATHER;
     }
   },
   methods: {
     getPM25() {},
-    switchLang() {
-      this.$store.dispatch("demo/fresh_weather");
-    },
+    ...mapActions({
+      switchLang: "fresh_weather"
+    }),
     test() {
       this.bigger = !this.bigger;
     }

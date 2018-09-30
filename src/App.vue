@@ -6,20 +6,21 @@
 
 <script>
 import navWrapper from "@/components/nav-wrapper/navWrapper.vue";
+import { mapState } from "vuex";
 
 export default {
+  components: {
+    navWrapper
+  },
   data() {
     return {};
   },
   computed: {
-    menus() {
-      return this.$store.state.menus;
-    }
+    ...mapState(["menus"])
   },
   methods: {},
-  components: {
-    navWrapper
-  }
+  mounted() {},
+  created() {}
 };
 </script>
 
