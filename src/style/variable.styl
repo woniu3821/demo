@@ -1,0 +1,32 @@
+@doc-width: 1212px; //1180+32
+@normal-padding: 16px;
+@normal-size: 12px;
+@dark-color: #1C2438;
+@light-color: #999;
+@title-color: #414859;
+@table-text-color: #495060;
+@link-text-color: #3399FF;
+@btn-primary-color: #2d8cf0;
+@select-seleted-color: #e6f6ff; //下拉框被选中的颜色
+@border-color: #E9EAEC;
+@refused-color:#E54C3D;
+@accept-color:#19BE6B;
+@audited-color:#FF9900;
+@uncommit-color:#4A69F7;
+
+
+
+.flex(@direction: row, @align-items: center, @justify-content: space-around) {
+    display: flex;
+    align-items: @align-items;
+    justify-content: @justify-content;
+    flex-direction: @direction;
+}
+
+.hasSplit::after {
+    content: "|";
+    display: block;
+    float: right;
+    position: relative;
+    left: 8px;
+}
