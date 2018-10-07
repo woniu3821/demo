@@ -1,9 +1,13 @@
+import { getHomeRoute } from "@/utils/utils";
+import routers from "@/router/asyncRouter.js";
 export default {
   WEATHER: "初始信息",
   title: "测试应用",
   userDetail: {},
   routeList: [],
   userType: "",
+  breadCrumbList: [],
+  homeRoute: getHomeRoute(routers),
   menus: [
     {
       key: "01",

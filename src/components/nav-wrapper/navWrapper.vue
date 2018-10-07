@@ -29,6 +29,7 @@
             <Icon :type="bread.icon || ''"></Icon> {{bread.title}}
           </BreadcrumbItem>
         </Breadcrumb>
+        <!-- <custom-bread-crumb style="margin-left: 30px;" :list="breadCrumbList"></custom-bread-crumb> -->
       </div>
       <!-- <div class="app-crumbs">
         <Breadcrumb>
@@ -72,8 +73,8 @@ export default {
   watch: {
     $route: {
       handler(route) {
+        this.setBreadCrumb(route);
         let path = route.path;
-        console.log(route);
         this.setUserType(route.params.name);
         let item = getItemFromTree(this.menus, path);
         if (item) {
@@ -99,6 +100,11 @@ export default {
   },
   computed: {
     ...mapGetters(["routeList", "userTypeName"]),
+
+    breadCrumbList() {
+      return this.$store.state.breadCrumbList;
+    },
+
     breadcrumbs() {
       // debugger
       let find = false;
@@ -127,10 +133,13 @@ export default {
       }
     }
   },
-  mounted() {},
+  mounted() {
+    this.setBreadCrumb(this.$route);
+  },
   methods: {
     ...mapMutations({
-      setUserType: "SET_USER_TYPE"
+      setUserType: "SET_USER_TYPE",
+      setBreadCrumb: "setBreadCrumb"
     }),
     handleSelect(key) {
       console.log("出现结果：" + key);

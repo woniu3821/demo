@@ -4,7 +4,7 @@ import {
   MENU_UPDATA,
   SET_USER_TYPE
 } from "./types";
-
+import { getBreadCrumbList } from "@/utils/utils";
 export default {
   [DEMO_FRESH_WEATHER](state, payload) {
     state.WEATHER = `远程返回：${payload.data.showapi_res_error}`;
@@ -17,5 +17,8 @@ export default {
   },
   [SET_USER_TYPE](state, data) {
     state.userType = data;
+  },
+  setBreadCrumb(state, route) {
+    state.breadCrumbList = getBreadCrumbList(route, state.homeRoute);
   }
 };
