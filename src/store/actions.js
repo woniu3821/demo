@@ -2,8 +2,7 @@ import axios from "@/utils/axios";
 import { DEMO_FRESH_WEATHER } from "./types";
 
 const actions = {
-  async [DEMO_FRESH_WEATHER]({ commit, rootState }) {
-    console.log(rootState);
+  async [DEMO_FRESH_WEATHER]({ commit }) {
     let pms = {
       "showapi_appid ": "59166",
       "showapi_sign ": "7e6cee7e3046484fa4bd15869b0640fb",

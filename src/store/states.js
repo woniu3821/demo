@@ -1,6 +1,9 @@
 export default {
   WEATHER: "初始信息",
   title: "测试应用",
+  userDetail: {},
+  routeList: [],
+  userType: "",
   menus: [
     {
       key: "01",
@@ -50,6 +53,11 @@ export default {
         }
       ]
     },
-    { key: "02", title: "用户信息", path: "/userInfo", icon: "ios-cog-outline" }
+    {
+      key: "02",
+      title: "用户信息",
+      path: "/viewUserInfo",
+      icon: "ios-cog-outline"
+    }
   ]
 };

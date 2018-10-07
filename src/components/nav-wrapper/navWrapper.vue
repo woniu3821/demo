@@ -4,20 +4,22 @@
       <Menu style="width:100%;" theme="dark" v-show="menuExpand" :active-name="activeItem" :open-names="openedNames" @on-select="handleSelect">
         <template v-for="item in menus">
           <side-menu-item v-if="item.children && item.children.length > 0" :key="`menu-${item.key}`" :parent-item="item"></side-menu-item>
-          <menu-item v-else :name="item.key" :key="`menu-${item.key}`"><Icon :type="item.icon"/><span>{{item.title}}</span></menu-item>
+          <menu-item v-else :name="item.key" :key="`menu-${item.key}`">
+            <Icon :type="item.icon" /><span>{{item.title}}</span></menu-item>
         </template>
       </Menu>
       <div class="menu-collapsed" v-show="!menuExpand">
         <template v-for="item in menus">
           <collapsed-menu v-if="item.children && item.children.length > 0" :active-name="activeItem" :is-root="true" @on-click="handleSelect" :parent-item="item" :key="`drop-menu-${item.key}`"></collapsed-menu>
           <Tooltip transfer v-else theme="light" :content="item.title" placement="right" :key="`drop-menu-${item.key}`">
-            <a @click="handleSelect(item.key)" :class="['drop-menu-a', {'collapsed-active': activeItem == item.key}]" :style="{textAlign: 'center'}"><Icon :type="item.icon" :size="16" color="rgba(255,255,255,.7)" /></a>
+            <a @click="handleSelect(item.key)" :class="['drop-menu-a', {'collapsed-active': activeItem == item.key}]" :style="{textAlign: 'center'}">
+              <Icon :type="item.icon" :size="16" color="rgba(255,255,255,.7)" /></a>
           </Tooltip>
         </template>
       </div>
       <div class="menu-toggle" @click="toggleMenu">
-          <Icon v-if="expand" type="ios-arrow-back" />
-          <Icon v-else type="ios-arrow-forward"/>
+        <Icon v-if="expand" type="ios-arrow-back" />
+        <Icon v-else type="ios-arrow-forward" />
       </div>
     </div>
     <div class="app-main" :style="{marginLeft: leftWidth}">
@@ -28,15 +30,24 @@
           </BreadcrumbItem>
         </Breadcrumb>
       </div>
+      <!-- <div class="app-crumbs">
+        <Breadcrumb>
+          <BreadcrumbItem v-for="(item,index) in routeList" :key="index" :to="item.path">
+            <Icon :type="item.meta.icon || ''"></Icon>{{item.meta.name}}
+          </BreadcrumbItem>
+        </Breadcrumb>
+      </div> -->
       <div class="app-content">
+        <div v-if="userTypeName" class="top-info">{{userTypeName}}</div>
+        <!-- <keep-alive> -->
         <router-view></router-view>
+        <!-- </keep-alive> -->
       </div>
     </div>
   </section>
 </template>
 <script type="text/ecmascript-6">
-import SideMenuItem from "./sideMenuItem.vue";
-import CollapsedMenu from "./collapsedMenu.vue";
+import { mapGetters, mapMutations } from "vuex";
 import $ from "jquery";
 export default {
   props: {
@@ -56,15 +67,14 @@ export default {
       openedNames: []
     };
   },
-  components: {
-    SideMenuItem,
-    CollapsedMenu
-  },
+  components: {},
   created() {},
   watch: {
     $route: {
       handler(route) {
         let path = route.path;
+        console.log(route);
+        this.setUserType(route.params.name);
         let item = getItemFromTree(this.menus, path);
         if (item) {
           this.activeItem = item.key;
@@ -88,6 +98,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(["routeList", "userTypeName"]),
     breadcrumbs() {
       // debugger
       let find = false;
@@ -116,7 +127,11 @@ export default {
       }
     }
   },
+  mounted() {},
   methods: {
+    ...mapMutations({
+      setUserType: "SET_USER_TYPE"
+    }),
     handleSelect(key) {
       console.log("出现结果：" + key);
       let item = getItemFromTree(this.menus, key);
@@ -159,66 +174,47 @@ export default {
 };
 </script>
 <style lang="stylus">
-body {
-  overflow: hidden;
-}
-
-#app {
-  overflow: hidden;
-}
-
-.app-con {
-  background-color: #f2f5fa;
-  overflow: hidden;
-
-  .app-menu {
-    position: fixed;
-    height: 100vh;
-    background-color: #515a6e;
-
-    .ivu-menu-item {
-      white-space: nowrap;
-    }
-
-    .menu-toggle {
-      position: absolute;
-      bottom: 20px;
-      height: 40px;
-      width: 100%;
-      text-align: center;
-      color: white;
-      cursor: pointer;
-      line-height: 40px;
-
-      &:hover {
-        background-color: rgba(45, 140, 240, 0.2);
-      }
-    }
-
-    transition: width 1s;
-  }
-
-  .app-main {
-    transition: margin-left 1s;
-    overflow: auto;
-    height: 100vh;
-
-    .app-crumbs {
-      margin: 10px 20px;
-      height: 21px;
-    }
-
-    .app-content {
-      min-width: 900px;
-      background-color: white;
-      margin: 20px;
-      margin-right: calc(260px + 100% - 100vw);
-      transition: margin-right 1s;
-      padding: 20px;
-      box-shadow: 1px 1px 5px #ccc, -1px -1px 5px #ccc;
-      border-radius: 10px;
-      min-height: calc(100% - 74px);
-    }
-  }
-}
+body
+  overflow hidden
+#app
+  overflow hidden
+.app-con
+  background-color #f2f5fa
+  overflow hidden
+  .app-menu
+    position fixed
+    height 100vh
+    background-color #515a6e
+    .ivu-menu-item
+      white-space nowrap
+    .menu-toggle
+      position absolute
+      bottom 20px
+      height 40px
+      width 100%
+      text-align center
+      color white
+      cursor pointer
+      line-height 40px
+      &:hover
+        background-color rgba(45, 140, 240, 0.2)
+    transition width 1s
+  .app-main
+    transition margin-left 1s
+    overflow auto
+    height 100vh
+    .app-crumbs
+      margin 10px 20px
+      height 21px
+    .app-content
+      min-width 900px
+      background-color white
+      margin 20px
+      margin-right calc(260px + 100% - 100vw)
+      transition margin-right 1s
+      padding 20px
+      box-shadow 1px 1px 5px #ccc, -1px -1px 5px #ccc
+      border-radius 10px
+      min-height calc(100% - 74px)
+      position relative
 </style>

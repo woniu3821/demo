@@ -1,12 +1,62 @@
-@import url('./variable.styl');
-.hasSplit::after {
-  content: "|";
-  display: block;
-  float: right;
-  position: relative;
-  left: 8px;
-  font-size: 14px;
-}
-.tabActive {
-  color: @link-text-color;
-}
+
+@import './variable'
+
+.hasSplit::after
+  content '|'
+  margin 0 4px
+  font-size 14px
+/* css为clearfix，清除浮动 */
+.clearfix::before, .clearfix::after
+  content ''
+  height 0
+  line-height 0
+  display block
+  visibility hidden
+  clear both
+.clearfix:after
+  clear both
+.tabActive
+  color $link-text-color
+.h-center
+  display flex
+  align-items center
+  justify-content center
+.mrt-10
+  margin-top 10px
+.mrt-15
+  margin-top 15px
+.mrt-20
+  margin-top 20px
+.mrb-10
+  margin-bottom 10px
+.mrb-15
+  margin-bottom 15px
+.mrb-20
+  margin-bottom 20px
+.title-bar
+  font-size 16px
+  color #464C5B
+  font-weight 600
+  &>a
+    font-weight 400
+    font-style normal
+    color #2D8CF0
+    font-size 13px
+    margin-left 10px
+.line
+  border-top 1px solid $border-color
+  width 100%
+  margin-bottom 15px
+.btn-r
+  margin-right 20px
+.top-info
+  width 200px
+  background #008DF1
+  height 50px
+  line-height 50px
+  color #ffffff
+  font-size 20px
+  text-align center
+  position absolute
+  top -25px
+  right 100px
