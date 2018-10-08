@@ -5,6 +5,7 @@ export default {
   title: "测试应用",
   userDetail: {},
   routeList: [],
+  teacherInfo: {},
   userType: "",
   breadCrumbList: [],
   homeRoute: getHomeRoute(routers),

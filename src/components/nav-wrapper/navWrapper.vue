@@ -75,7 +75,7 @@ export default {
       handler(route) {
         this.setBreadCrumb(route);
         let path = route.path;
-        this.setUserType(route.params.name);
+        this.setUserType(route.params.userType); //设置用户类型
         let item = getItemFromTree(this.menus, path);
         if (item) {
           this.activeItem = item.key;
@@ -138,7 +138,7 @@ export default {
   },
   methods: {
     ...mapMutations({
-      setUserType: "SET_USER_TYPE",
+      setUserType: "setUserType",
       setBreadCrumb: "setBreadCrumb"
     }),
     handleSelect(key) {

@@ -4,4 +4,14 @@
 export const DEMO_FRESH_WEATHER = "DEMO_FRESH_WEATHER";
 export const SET_USERINFO_DETAIL = "SET_USERINFO_DETAIL"; //设置用户信息
 export const MENU_UPDATA = "MENU_UPDATA"; //面包屑更新
-export const SET_USER_TYPE = "SET_USER_TYPE"; //用户类型
+export const SET_USER_TYPE = "setUserType"; //用户类型
+export const GET_TEACHER_INFO = "GET_TEACHER_INFO"; //获取教职工信息
+export const GET_USER_INFO = "getUserInfo"; //获取用户信息
+export const GET_USER_DEPT = "getUserDept"; //获取用户部门/院系
+export const GET_USER_MAJOR = "getUserMajor"; //获取用户专业
+export const GET_USER_TYPE = "getUserType"; //获取用户类型
+export const GET_USER_STATUS = "getUserStatus"; //获取账号状态
+export const DEL_USER = "delUser"; //删除用户
+export const EXPORT_USER = "exportUser"; //导出用户
+export const SET_USER_STATUS = "setUserStatus"; //设置用户状态
+export const SET_USER_PASSWD = "setUserPasswd"; //设置用户密码

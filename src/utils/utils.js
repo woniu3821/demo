@@ -1,3 +1,4 @@
+import axios from "@/utils/axios";
 export const getBreadCrumbList = (route, homeRoute) => {
   let routeMetched = route.matched;
   let res = routeMetched
@@ -41,4 +42,20 @@ export const getHomeRoute = routers => {
     }
   }
   return homeRoute;
+};
+
+export const fetch = (url, params = {}, method = "get") => {
+  return new Promise((resolve, reject) => {
+    axios({ url, method, data: params })
+      .then(res => {
+        resolve(res);
+      })
+      .catch(err => {
+        reject(err);
+      });
+  });
+};
+
+export const isArray = data => {
+  Array.isArray(data) && data.length ? data : [];
 };

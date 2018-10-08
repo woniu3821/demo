@@ -8,9 +8,8 @@ const getters = {
   userTypeName(state) {
     if (state.userType !== undefined) {
       return state.userType == 1 ? "学生" : "教职工";
-    } else {
-      return "";
     }
+    return state.userType;
   },
   routeList(state) {
     state.routeList.forEach(item => {

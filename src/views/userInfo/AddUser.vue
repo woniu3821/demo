@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="title-bar">
-      新增用户（{{userTypeName}}）
+    {{$route.params.tag}}（{{userTypeName}}）
     </div>
     <Row>
       <Col span="10">
@@ -99,12 +99,12 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 export default {
   name: "add-user",
   data() {
     return {
-      type: this.$route.params.name,
+      type: this.$route.params.userType,
       formItem: {
         input: "",
         select: "",
@@ -115,10 +115,12 @@ export default {
   },
   props: {},
   computed: {
-    ...mapGetters(["userTypeName"])
+    ...mapGetters(["userTypeName"]),
+    ...mapState(["userDetail"])
   },
   mounted() {
-    // console.log(this.$route);
+    console.log(this.$route);
+    console.log(this.userDetail);
   }
 };
 </script>
