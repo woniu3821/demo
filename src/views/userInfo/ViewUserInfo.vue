@@ -7,35 +7,35 @@
       <Form :model="searchForm" ref="searchForm" :label-width="75" label-position="right">
         <Row :gutter="15">
           <Col span="10">
-          <FormItem label="搜索用户：">
+          <FormItem label="搜索用户：" prop="searchContent">
             <Input v-model="searchForm.searchContent" placeholder="搜索用户名、姓名、手机号"></Input>
           </FormItem>
           </Col>
         </Row>
         <Row :gutter="15">
           <Col span="5">
-          <FormItem class="big-label" label="所属部门/院系：">
+          <FormItem class="big-label" prop="level" label="所属部门/院系：">
             <Select v-model="searchForm.level">
               <Option v-for="(item,index) in deptList" :key="index" value="item">New York</Option>
             </Select>
           </FormItem>
           </Col>
           <Col span="5">
-          <FormItem label="专业：">
+          <FormItem label="专业：" prop="major">
             <Select v-model="searchForm.major">
-            <Option v-for="(item,index) in majorList" :key="index" value="item">New York</Option>
+              <Option v-for="(item,index) in majorList" :key="index" value="item">New York</Option>
             </Select>
           </FormItem>
           </Col>
           <Col span="5">
-          <FormItem label="人员类型：">
+          <FormItem label="人员类型：" prop="userType">
             <Select v-model="searchForm.userType">
               <Option v-for="(item,index) in typeList" :key="index" :value="item.value">{{ item.label }}</Option>
             </Select>
           </FormItem>
           </Col>
           <Col span="5">
-          <FormItem label="账号状态：">
+          <FormItem label="账号状态：" prop="userStatus">
             <Select v-model="searchForm.userStatus">
               <Option v-for="(item,index) in statusList" :key="index" :value="item.value">{{ item.label }}</Option>
             </Select>
@@ -89,7 +89,7 @@
     <Row>
       <Table @on-selection-change="selectList" border :columns="columns4" :data="aRealTableData"></Table>
     </Row>
-    <Page v-if="pageInfo.total>0" class="mrt-20" show-total :total="pageInfo.total" :page-size="pageInfo.pageSize" show-elevator show-sizer @on-change="pageNumChange"  @on-page-size-change="pageSizeChange"/>
+    <Page v-if="pageInfo.total>0" class="mrt-20" show-total :total="pageInfo.total" :page-size="pageInfo.pageSize" show-elevator show-sizer @on-change="pageNumChange" @on-page-size-change="pageSizeChange" />
     <Modal @on-visible-change="modalChange" v-model="modal" width="450" :title="`请选择批量${title}的对象`">
       <RadioGroup v-model="setRadio" vertical>
         <Radio label="1">
@@ -119,16 +119,16 @@
         </Radio>
       </RadioGroup>
       <Form v-if="setStatusRadio==2" class="mrt-20" ref="formTime" :model="formTime" label-position="top">
-        <FormItem required label="冻结时长" >
+        <FormItem required label="冻结时长">
           <Row :gutter="20">
             <Col :span="8">
-               <Input style="width:60%" v-model.trim.number="formTime.day" placeholder=""></Input> 天
+            <Input style="width:60%" v-model.trim.number="formTime.day" placeholder=""></Input> 天
             </Col>
             <Col :span="8">
-               <Input style="width:60%" v-model.trim.number="formTime.hour" placeholder=""></Input> 小时
+            <Input style="width:60%" v-model.trim.number="formTime.hour" placeholder=""></Input> 小时
             </Col>
             <Col :span="8">
-               <Input style="width:60%" v-model.trim.number="formTime.minute" placeholder=""></Input> 分钟
+            <Input style="width:60%" v-model.trim.number="formTime.minute" placeholder=""></Input> 分钟
             </Col>
           </Row>
         </FormItem>
@@ -142,20 +142,20 @@
       </div>
     </Modal>
     <Modal @on-visible-change="modal2Change" v-model="modal2" width="500" title="重设密码">
-       <Alert type="warning" show-icon>管理员密码不会被重置</Alert>
-      <Form class="mrt-20" :label-width="80" ref="formPass" :model="formPass" >
-         <FormItem required label="密码策略" >
-            <RadioGroup v-model="setPassRadio">
-              <Radio label="1">
-                固定值
-              </Radio>
-              <Radio label="2">
-                身份证后六位
-              </Radio>
-            </RadioGroup>
+      <Alert type="warning" show-icon>管理员密码不会被重置</Alert>
+      <Form class="mrt-20" :label-width="80" ref="formPass" :model="formPass">
+        <FormItem required label="密码策略">
+          <RadioGroup v-model="setPassRadio">
+            <Radio label="1">
+              固定值
+            </Radio>
+            <Radio label="2">
+              身份证后六位
+            </Radio>
+          </RadioGroup>
         </FormItem>
-        <FormItem required prop="pass" label="固定值" >
-            <Input  v-model.trim="formPass.pass" :placeholder="setPassRadio==1?'请输入固定值密码':'身份证号码为空的账户密码，将会重置为此固定值'"></Input>
+        <FormItem required prop="pass" label="固定值">
+          <Input v-model.trim="formPass.pass" :placeholder="setPassRadio==1?'请输入固定值密码':'身份证号码为空的账户密码，将会重置为此固定值'"></Input>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -168,12 +168,12 @@
     <Modal @on-visible-change="modal3Change" v-model="modal3" width="450" title="确认删除">
       <Row type="flex" align="bottom">
         <Col offset="2" span="4">
-          <Icon size="50" color="#ff9900" type="md-alert" />
+        <Icon size="50" color="#ff9900" type="md-alert" />
         </Col>
         <Col span="18">
-          您确认删除指定用户吗？<br>
-          租户管理员和已激活用户不会被删除
-        </Col> 
+        您确认删除指定用户吗？<br>
+        租户管理员和已激活用户不会被删除
+        </Col>
       </Row>
       <div slot="footer">
         <ButtonGroup>
@@ -430,14 +430,14 @@ export default {
       //冻结时间弹窗
       if (!value) {
         this.setStatusRadio = "1";
-        this.$refs["formTime"].resetFields();
+        this.$refs.formTime.resetFields();
       }
     },
     modal2Change(value) {
       //设置密码弹窗
       if (!value) {
         this.setPassRadio = "1";
-        this.$refs["formPass"].resetFields();
+        this.$refs.formPass.resetFields();
       }
     },
     modal3Change() {
@@ -462,7 +462,7 @@ export default {
     },
     resetForm() {
       //重置搜索
-      this.$refs["searchForm"].resetFields();
+      this.$refs.searchForm.resetFields();
       this.getUser();
     },
     getUser() {
