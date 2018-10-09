@@ -26,8 +26,8 @@ instance.interceptors.response.use(
     // 直接返回html的情况处理
     if (response.headers["content-type"] === "text/htmlcharset=UTF-8") {
       const href = window.location.href;
-      window.location.href =
-        href.substring(0, href.lastIndexOf("/index.html")) + "/login.html";
+      // window.location.href =
+      //   href.substring(0, href.lastIndexOf("/index.html")) + "/login.html";
       return;
     }
     // 正常请求的处理
@@ -39,11 +39,11 @@ instance.interceptors.response.use(
       response.data.datas[REDIRECT_KEY]
     ) {
       console.log("没有登录，跳转...");
-      response.data["code"] = "0";
-      const href = window.location.href;
-      window.location.href =
-        href.substring(0, href.lastIndexOf("/index.html")) + "/login.html";
-      return;
+      // response.data["code"] = "0";
+      // const href = window.location.href;
+      // window.location.href =
+      //   href.substring(0, href.lastIndexOf("/index.html")) + "/login.html";
+      // return;
     }
     // const data = response.data
     // if (data && data.code !== '0') {

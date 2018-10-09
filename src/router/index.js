@@ -69,45 +69,45 @@ const router = new Router({
   routes: [...asyncRouter, ...routes]
 });
 
-// 路由跳转前验证
-var routeList = [];
-router.beforeEach((to, from, next) => {
-  var index = -1;
-  routeList.find((item, num) => {
-    if (item.name == to.name) index = num;
-  });
-  if (index !== -1) {
-    //如果存在路由列表，则把之后的路由都删掉
-    routeList.splice(index + 1, routeList.length - index - 1);
-  } else {
-    routeList.push(to);
-  }
-  store.commit("MENU_UPDATA", routeList);
-  next();
-  // 页面跳转前先判断是否存在权限列表，如果存在则直接跳转，如果没有则请求一次
-  if (store.state.menus.length === 0) {
-    // 获取权限列表，如果失败则跳回登录页重新登录
-    store
-      .dispatch("permission/getPermission")
-      .then(res => {
-        // 匹配并生成需要添加的路由对象
-        router.addRoutes(res);
-        next(to.path);
-      })
-      .catch(() => {
-        store.dispatch("user/logout").then(() => {
-          router.replace("/login");
-        });
-      });
-  } else {
-    // 如果是免登陆的页面则直接进入，否则跳转到登录页面
-    if (whiteList.indexOf(to.path) >= 0) {
-      next();
-    } else {
-      next();
-      // router.replace("/login");
-    }
-  }
-});
+// // 路由跳转前验证
+// var routeList = [];
+// router.beforeEach((to, from, next) => {
+//   var index = -1;
+//   routeList.find((item, num) => {
+//     if (item.name == to.name) index = num;
+//   });
+//   if (index !== -1) {
+//     //如果存在路由列表，则把之后的路由都删掉
+//     routeList.splice(index + 1, routeList.length - index - 1);
+//   } else {
+//     routeList.push(to);
+//   }
+//   store.commit("MENU_UPDATA", routeList);
+//   next();
+//   // 页面跳转前先判断是否存在权限列表，如果存在则直接跳转，如果没有则请求一次
+//   if (store.state.menus.length === 0) {
+//     // 获取权限列表，如果失败则跳回登录页重新登录
+//     store
+//       .dispatch("permission/getPermission")
+//       .then(res => {
+//         // 匹配并生成需要添加的路由对象
+//         router.addRoutes(res);
+//         next(to.path);
+//       })
+//       .catch(() => {
+//         store.dispatch("user/logout").then(() => {
+//           router.replace("/login");
+//         });
+//       });
+//   } else {
+//     // 如果是免登陆的页面则直接进入，否则跳转到登录页面
+//     if (whiteList.indexOf(to.path) >= 0) {
+//       next();
+//     } else {
+//       next();
+//       // router.replace("/login");
+//     }
+//   }
+// });
 
 export default router;
