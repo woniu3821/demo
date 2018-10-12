@@ -1,6 +1,7 @@
 import { getHomeRoute } from "@/utils/utils";
 import routers from "@/router/asyncRouter.js";
 export default {
+  loading: false, //全局遮罩loading
   WEATHER: "初始信息",
   title: "测试应用",
   userDetail: {},

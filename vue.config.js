@@ -17,18 +17,16 @@ module.exports = {
       // }
     }
   },
-  devServer: {
-    proxy: {
-      "wec-msg-mngt/": {
-        target: "https://wectest3.wisedu.com/",
-        // target: 'http://127.0.0.1:8081',
-        changeOrigin: true
+  configureWebpack: {
+    devServer: {
+      proxy: {
+        "/wec-user-mngt": {
+          target: "http://172.16.9.101:8082",
+          // target: 'http://172.20.4.218:8080',
+          // ws: true,
+          changeOrigin: true
+        }
       }
     }
   }
-  // configureWebpack: {
-  //   externals: {
-  //     vue: "Vue"
-  //   }
-  // }
 };

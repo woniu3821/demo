@@ -39,6 +39,8 @@
         </Breadcrumb>
       </div> -->
       <div class="app-content">
+        <!-- 加载遮罩层 -->
+         <Spin size="large" fix v-if="$store.state.loading"></Spin>
         <div v-if="userTypeName" class="top-info">{{userTypeName}}</div>
         <!-- <keep-alive> -->
         <router-view></router-view>

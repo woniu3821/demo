@@ -11,7 +11,13 @@ import {
   DEL_USER,
   EXPORT_USER,
   SET_USER_STATUS,
-  SET_USER_PASSWD
+  SET_USER_PASSWD,
+  ADD_USER_STU,
+  GET_STU_CATEGORY,
+  GET_USER_MAJOR_OLD,
+  GET_USER_DEPT_OLD,
+  GET_USER_STU,
+  GET_CLASS_LIST
 } from "./types";
 
 const actions = {
@@ -27,14 +33,13 @@ const actions = {
   // },
   showMsg({ commit }, data) {
     try {
-      Message[data.type]({ content: data.content });
+      Message[data.type || "success"]({ content: data.content });
     } catch (err) {
       console.error("请输入正确类型");
     }
   },
   [GET_TEACHER_INFO]({ commit }, params) {
     return fetch("statics/meta-info/user_addOrUpdateTeacher.json", params);
-    // commit(GET_TEACHER_INFO, data);
   },
   [GET_USER_INFO]({ commit }, params) {
     return fetch("/userv2/getUserByCondition", params, "post");
@@ -42,8 +47,14 @@ const actions = {
   [GET_USER_DEPT]({ commit }, params) {
     return fetch("/userv2/getUserDept", params, "post");
   },
+  [GET_USER_DEPT_OLD]({ commit }, params) {
+    return fetch("/code/stuDept", params, "post");
+  },
   [GET_USER_MAJOR]({ commit }, params) {
     return fetch("/userv2/getUserMajor", params, "post");
+  },
+  [GET_USER_MAJOR_OLD]({ commit }, params) {
+    return fetch("/code/major", params, "post");
   },
   [GET_USER_TYPE]({ commit }, params) {
     return fetch("/userv2/getUserType", params, "post");
@@ -62,6 +73,18 @@ const actions = {
   },
   [SET_USER_PASSWD]({ commit }, params) {
     return fetch("/userv2/setUserPasswd", params, "post");
+  },
+  [ADD_USER_STU]({ commit }, params) {
+    return fetch("/user/addOrUpdateStu", params, "post");
+  },
+  [GET_STU_CATEGORY]({ commit }, params) {
+    return fetch("/code/stuCategory", params, "post");
+  },
+  [GET_USER_STU]({ commit }, params) {
+    return fetch("/code/stuType", params, "post");
+  },
+  [GET_CLASS_LIST]({ commit }, params) {
+    return fetch("/code/class", params, "post");
   }
 };
 export default actions;

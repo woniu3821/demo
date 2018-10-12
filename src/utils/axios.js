@@ -1,3 +1,4 @@
+import { Message } from "iview";
 import env from "./env";
 import axios from "axios";
 const instance = axios.create({
@@ -10,14 +11,17 @@ const instance = axios.create({
   ],
   headers: {
     "Content-Type": "application/json",
-    "X-Requested-With": "XMLHttpRequest"
+    "X-Requested-With": "XMLHttpRequest",
+    wecSchoolId: 1019429679435008
   }
   // ,
   // withCredentials: true
 });
 
 instance.interceptors.request.use(
-  config => config,
+  config => {
+    return config;
+  },
   error => Promise.reject(error)
 );
 
@@ -30,24 +34,9 @@ instance.interceptors.response.use(
       //   href.substring(0, href.lastIndexOf("/index.html")) + "/login.html";
       return;
     }
-    // 正常请求的处理
-    const LOGIN_FLAG = "WEC-HASLOGIN";
-    const REDIRECT_KEY = "WEC-REDIRECTURL";
-    if (
-      response.data.datas &&
-      response.data.datas[LOGIN_FLAG] === false &&
-      response.data.datas[REDIRECT_KEY]
-    ) {
-      console.log("没有登录，跳转...");
-      // response.data["code"] = "0";
-      // const href = window.location.href;
-      // window.location.href =
-      //   href.substring(0, href.lastIndexOf("/index.html")) + "/login.html";
-      // return;
-    }
-    // const data = response.data
+    // const data = response.data;
     // if (data && data.code !== '0') {
-    //   Vue.$showToast && Vue.$showToast(data.message)
+    //   Message
     // }
     return response;
   },

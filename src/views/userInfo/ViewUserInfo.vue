@@ -16,28 +16,28 @@
           <Col span="5">
           <FormItem class="big-label" prop="level" label="所属部门/院系：">
             <Select v-model="searchForm.level">
-              <Option v-for="(item,index) in deptList" :key="index" value="item">New York</Option>
+              <Option v-for="(item,index) in deptList" :key="index" :value="item.id">{{item.name}}</Option>
             </Select>
           </FormItem>
           </Col>
           <Col span="5">
           <FormItem label="专业：" prop="major">
             <Select v-model="searchForm.major">
-              <Option v-for="(item,index) in majorList" :key="index" value="item">New York</Option>
+              <Option v-for="(item,index) in majorList" :key="index" :value="item.id">{{item.name}}</Option>
             </Select>
           </FormItem>
           </Col>
           <Col span="5">
           <FormItem label="人员类型：" prop="userType">
             <Select v-model="searchForm.userType">
-              <Option v-for="(item,index) in typeList" :key="index" :value="item.value">{{ item.label }}</Option>
+              <Option v-for="(item,index) in typeList" :key="index" :value="item.id">{{item.name}}</Option>
             </Select>
           </FormItem>
           </Col>
           <Col span="5">
           <FormItem label="账号状态：" prop="userStatus">
             <Select v-model="searchForm.userStatus">
-              <Option v-for="(item,index) in statusList" :key="index" :value="item.value">{{ item.label }}</Option>
+              <Option v-for="(item,index) in statusList" :key="index" :value="item.id">{{item.name}}</Option>
             </Select>
           </FormItem>
           </Col>
@@ -89,8 +89,8 @@
     <Row>
       <Table @on-selection-change="selectList" border :columns="columns4" :data="aRealTableData"></Table>
     </Row>
-    <Page v-if="pageInfo.total>0" class="mrt-20" show-total :total="pageInfo.total" :page-size="pageInfo.pageSize" show-elevator show-sizer @on-change="pageNumChange" @on-page-size-change="pageSizeChange" />
-    <Modal @on-visible-change="modalChange" v-model="modal" width="450" :title="`请选择批量${title}的对象`">
+    <Page v-if="aRealTableData.length>0" class="mrt-20" show-total :total="pageInfo.totalSize" :page-size="pageInfo.pageSize" show-elevator show-sizer @on-change="pageNumChange" @on-page-size-change="pageSizeChange" />
+    <Modal v-model="modal" width="450" :title="`请选择批量${title}的对象`">
       <RadioGroup v-model="setRadio" vertical>
         <Radio label="1">
           勾选对象
@@ -143,9 +143,9 @@
     </Modal>
     <Modal @on-visible-change="modal2Change" v-model="modal2" width="500" title="重设密码">
       <Alert type="warning" show-icon>管理员密码不会被重置</Alert>
-      <Form class="mrt-20" :label-width="80" ref="formPass" :model="formPass">
-        <FormItem required label="密码策略">
-          <RadioGroup v-model="setPassRadio">
+      <Form class="mrt-20" :label-width="80" ref="formPass"  :model="formPass">
+        <FormItem required label="密码策略" prop="passwdModiMethod">
+          <RadioGroup v-model="formPass.passwdModiMethod">
             <Radio label="1">
               固定值
             </Radio>
@@ -154,8 +154,8 @@
             </Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem required prop="pass" label="固定值">
-          <Input v-model.trim="formPass.pass" :placeholder="setPassRadio==1?'请输入固定值密码':'身份证号码为空的账户密码，将会重置为此固定值'"></Input>
+        <FormItem prop="newPassWd" :rules="[{required: true, message: '密码不能为空', trigger: 'blur'},{ type: 'string', max: 20, message: '密码不能超过80字符', trigger: 'blur' }]" label="固定值">
+          <Input v-model.trim="formPass.newPassWd" :placeholder="formPass.passwdModiMethod==1?'请输入固定值密码':'身份证号码为空的账户密码，将会重置为此固定值'"></Input>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -182,21 +182,24 @@
         </ButtonGroup>
       </div>
     </Modal>
+    
   </div>
 </template>
 
 <script>
 import { mapActions, mapMutations } from "vuex";
-import { pageMixins, listMixins } from "@/utils/mixins.js";
+import { formatDateTime } from "@/utils/utils";
+import { pageMixins, listMixins, listMixins2 } from "@/utils/mixins.js";
 export default {
-  mixins: [pageMixins, listMixins],
+  mixins: [pageMixins, listMixins, listMixins2],
   data() {
+    const _this = this;
     return {
       searchForm: {
         searchContent: "", //用户名、姓名、手机号
         major: "", //专业
         userType: "", //人员类型
-        level: 0, //层级； 对于学生类型该字段必填，用于区分是 1.学院 、2.专业、 还是3. 班级，对于老师类型可以不传；根节点 南京理工大学层级为0
+        level: "", //层级； 对于学生类型该字段必填，用于区分是 1.学院 、2.专业、 还是3. 班级，对于老师类型可以不传；根节点 南京理工大学层级为0
         userStatus: "" //账号状态
       },
       formTime: {
@@ -205,18 +208,22 @@ export default {
         minute: 0
       },
       formPass: {
-        pass: ""
+        passwdModiMethod: "1",
+        adminPassWd: "",
+        newPassWd: ""
       },
-      modal1: false,
-      modal2: false,
+      freezeTime: 0, //冻结时长
+      modal: false,
+      modal1: false, //冻结弹窗
+      modal2: false, //重置密码弹窗
       modal3: false,
       btnTag: 1, //操作标识
       tableSelectList: [], //选中的表格数据
       setRadio: "1",
       setStatusRadio: "1",
-      setPassRadio: "1",
       title: "删除",
-      modal: false,
+      params: {},
+      aTableData: [],
       columns4: [
         {
           type: "selection",
@@ -237,11 +244,7 @@ export default {
         },
         {
           title: "人员类型",
-          render: (h, params) => {
-            let type = params.row.userType == 1 ? "学生" : "教职工";
-
-            return h("div", `${type}(${status})`);
-          }
+          key: "userTypeId_DISPLAY"
         },
         {
           title: "所属部门/院系",
@@ -326,38 +329,6 @@ export default {
             );
           }
         }
-      ],
-      params: {},
-      aTableData: [
-        {
-          name: "John Brown",
-          age: 18,
-          address: "New York No. 1 Lake Park",
-          date: "2016-10-03",
-          userType: 1,
-          userStatus_DISPLAY: "正常"
-        },
-        {
-          name: "Jim Green",
-          age: 24,
-          address: "London No. 1 Lake Park",
-          userType: 1,
-          userStatus_DISPLAY: "冻结"
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          userStatus_DISPLAY: "停用",
-          userType: 2
-        },
-        {
-          name: "Jon Snow",
-          age: 26,
-          address: "Ottawa No. 2 Lake Park",
-          userStatus_DISPLAY: "停用",
-          userType: 2
-        }
       ]
     };
   },
@@ -379,19 +350,25 @@ export default {
         default:
           break;
       }
+    },
+    formTime: {
+      handler: function(now) {
+        var day = parseInt(now.day * 24 * 60);
+        var hour = parseInt(now.hour * 60);
+        var min = parseInt(now.minute);
+        this.freezeTime = day + hour + min;
+      },
+      deep: true
     }
   },
   computed: {
-    currentWeather() {
-      return this.$store.state.WEATHER;
-    },
     aRealTableData() {
       this.aTableData.forEach(item => {
-        let status = 0;
+        let status = 1;
         if (item.userStatus_DISPLAY == "冻结") {
-          status = 1;
-        } else if (item.userStatus_DISPLAY == "停用") {
           status = 2;
+        } else if (item.userStatus_DISPLAY == "停用") {
+          status = 3;
         }
         this.$set(item, "cellClassName", {
           userStatus_DISPLAY: `table-status-${status}`
@@ -401,19 +378,78 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      "getUserInfo",
+      "showMsg",
+      "delUser",
+      "exportUser",
+      "setUserStatus",
+      "setUserPasswd"
+    ]),
+    ...mapMutations({
+      setUserInfo: "SET_USERINFO_DETAIL"
+    }),
     delBtn() {
-      this.delUser();
+      this.delUser(this.calcTableList())
+        .then(res => {
+          if (res.code == 0) {
+            this.modal3 = false;
+            this.showMsg({
+              type: "success",
+              content: "删除成功！"
+            });
+            this.getUser();
+          } else {
+            this.showMsg({
+              type: "error",
+              content: "删除失败！租户管理员和已激活用户不可被删除"
+            });
+          }
+        })
+        .catch(err => {
+          this.modal3 = false;
+          this.showMsg({
+            type: "error",
+            content: err || "删除失败！租户管理员和已激活用户不可被删除"
+          });
+        });
     },
     setPass() {
-      this.setUserPasswd();
+      this.$refs.formPass.validate(valid => {
+        if (!valid) {
+          return;
+        }
+      });
+      this.setUserPasswd({
+        ...this.calcTableList(),
+        ...this.formPass
+      })
+        .then(res => {
+          if (res.code == 0) {
+            this.modal2 = false;
+            this.showMsg({
+              type: "success",
+              content: "重置密码成功！"
+            });
+            this.getUser();
+          } else {
+            this.showMsg({
+              type: "error",
+              content: "重置密码失败！管理员密码不会被重置"
+            });
+          }
+        })
+        .catch(err => {
+          this.modal2 = false;
+          this.showMsg({
+            type: "error",
+            content: err || "重置密码失败！管理员密码不会被重置"
+          });
+        });
     },
     setStatus() {
       if (this.setStatusRadio == 2) {
-        if (
-          this.formTime.day < 1 &&
-          this.formTime.hour < 1 &&
-          this.formTime.minute < 1
-        ) {
+        if (this.freezeTime < 1) {
           this.showMsg({
             type: "error",
             content: "请输入有效的冻结时长"
@@ -421,38 +457,70 @@ export default {
           return;
         }
       }
-      this.setUserStatus();
-    },
-    modalChange() {
-      this.setRadio = "1";
+
+      this.setUserStatus({
+        ...this.calcTableList(),
+        userStatus: this.setStatusRadio,
+        freezeBeginTime: formatDateTime(),
+        freezeTime: this.freezeTime
+      })
+        .then(res => {
+          if (res.code == 0) {
+            this.modal1 = false;
+            this.showMsg({
+              type: "success",
+              content: "设置成功"
+            });
+            this.getUser();
+          } else {
+            this.showMsg({
+              type: "error",
+              content: "设置失败"
+            });
+          }
+        })
+        .catch(err => {
+          this.modal1 = false;
+          this.showMsg({
+            type: "error",
+            content: err || "设置失败"
+          });
+        });
     },
     modal1Change(value) {
       //冻结时间弹窗
+      this.setStatusRadio = "1";
+      this.formTime.hour = 0;
+      this.formTime.minute = 0;
+      this.formTime.day = 0;
       if (!value) {
-        this.setStatusRadio = "1";
-        this.$refs.formTime.resetFields();
+        this.setRadio = "1";
       }
     },
     modal2Change(value) {
       //设置密码弹窗
+      this.formPass.newPassWd = "";
+      this.formPass.passwdModiMethod = "1";
       if (!value) {
-        this.setPassRadio = "1";
-        this.$refs.formPass.resetFields();
+        this.setRadio = "1";
       }
     },
-    modal3Change() {
+    modal3Change(value) {
       //删除弹窗
+      if (!value) {
+        this.setRadio = "1";
+      }
     },
     selectList(list) {
       // 选择的数据
       this.tableSelectList = list;
     },
     pageNumChange(num) {
-      this.params.pageNumber = num;
+      this.pageInfo.pageNumber = num;
       this.getUser();
     },
     pageSizeChange(size) {
-      this.params.pageSize = size;
+      this.pageInfo.pageSize = size;
       this.getUser();
     },
     searchUserInfo() {
@@ -466,10 +534,49 @@ export default {
       this.getUser();
     },
     getUser() {
-      this.getUserInfo({ ...this.pageInfo, ...this.searchForm })
-        .then
-        // res => {}
-        ();
+      this.tableSelectList = []; //重置选择的table
+      this.getUserInfo({
+        pageNumber: this.pageInfo.pageNumber,
+        pageSize: this.pageInfo.pageSize,
+        ...this.searchForm
+      })
+        .then(res => {
+          if (res.code == 0) {
+            this.aTableData = res.datas.rows;
+            this.pageInfo.totalSize = res.datas.totalSize;
+          } else {
+            this.$Message.error({
+              content: "获取用户失败",
+              duration: 3
+            });
+          }
+        })
+        .catch(err => {
+          this.$Message.error({
+            content: err || "获取用户失败",
+            duration: 3
+          });
+        });
+    },
+    calcTableList() {
+      //计算删除数据
+      let userIds = [];
+      for (let { userType, wid, userWid, userId } of this.tableSelectList) {
+        userIds.push({ userType, wid, userWid, userId });
+      }
+      let obj = {
+        optType: this.setRadio,
+        userIds,
+        searchCondition: {
+          ...this.searchForm
+        }
+      };
+      if (this.setRadio == 1) {
+        delete obj.searchCondition;
+      } else {
+        delete obj.userIds;
+      }
+      return obj;
     },
     handelBtn() {
       // 确认操作
@@ -503,10 +610,17 @@ export default {
         case 1:
           this.modal = false;
           this.modal3 = true;
-
           break;
         case 2:
-          this.exportUser();
+          this.exportUser({
+            searchCondition: encodeURIComponent(
+              JSON.stringify(this.calcTableList())
+            )
+          })
+            .then(res => {
+              // console.log(res);
+            })
+            .catch(err => {});
           break;
         case 3:
           this.modal = false;
@@ -525,21 +639,11 @@ export default {
         name: "add-user",
         params: { tag: "新增用户", userType }
       });
-    },
-    ...mapActions([
-      "getUserInfo",
-      "showMsg",
-      "delUser",
-      "exportUser",
-      "setUserStatus",
-      "setUserPasswd"
-    ]),
-    ...mapMutations({
-      setUserInfo: "SET_USERINFO_DETAIL"
-    })
+    }
   },
   created() {
     this.getUser();
+    console.log(formatDateTime());
   }
 };
 </script>
@@ -548,9 +652,9 @@ export default {
    color #FF9900
    font-size 12px
  .ivu-table
-   .table-status-1
-     background #f6d9d0
    .table-status-2
+     background #f6d9d0
+   .table-status-3
      background #e9eaec
  .big-label
    .ivu-form-item-label
