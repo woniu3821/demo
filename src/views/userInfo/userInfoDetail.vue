@@ -18,7 +18,7 @@
           <th class="th">人员类型</th>
           <td>{{userDetail.userTypeId_DISPLAY}}</td>
           <th class="th">{{type==1?'培养层次':'所属部门/院系'}}</th>
-          <td>{{type==2?userDetail.fullDeptName:userDetail.stuCategoryId_DISPLAY}}</td>
+          <td>{{type==2?userDetail.deptId_DISPLAY:userDetail.stuCategoryId_DISPLAY}}</td>
           <th class="th">{{type==2?'职务':''}}</th>
           <td >{{type==2?userDetail.position:''}}</td>
         </tr>
@@ -75,7 +75,7 @@
       </table>
     </Row>
     <Row class="fixb">
-        <Button size="large" class="btn-r" type="primary">编辑</Button>
+        <Button size="large" :to="{name: 'add-user',params: { tag: '编辑用户', userType:type }}" class="btn-r" type="primary">编辑</Button>
         <Button size="large" @click="modal2=true">重设密码</Button>
     </Row>
     <Modal @on-visible-change="modal2Change" v-model="modal2" width="500" title="重设密码">
@@ -143,9 +143,7 @@ export default {
       this.bigger = !this.bigger;
     }
   },
-  mounted() {
-    console.log(this.userDetail);
-  }
+  mounted() {}
 };
 </script>
  <style lang="stylus">

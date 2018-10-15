@@ -6,35 +6,35 @@
     <Row class="mrt-20">
       <Form :model="searchForm" ref="searchForm" :label-width="75" label-position="right">
         <Row :gutter="15">
-          <Col span="10">
+          <Col span="12">
           <FormItem label="搜索用户：" prop="searchContent">
             <Input v-model="searchForm.searchContent" placeholder="搜索用户名、姓名、手机号"></Input>
           </FormItem>
           </Col>
         </Row>
-        <Row :gutter="15">
-          <Col span="5">
-          <FormItem class="big-label" prop="level" label="所属部门/院系：">
+        <Row :gutter="10">
+          <Col span="6">
+          <FormItem :label-width="100" prop="level" label="所属部门/院系：">
             <Select v-model="searchForm.level">
               <Option v-for="(item,index) in deptList" :key="index" :value="item.id">{{item.name}}</Option>
             </Select>
           </FormItem>
           </Col>
-          <Col span="5">
+          <Col span="6">
           <FormItem label="专业：" prop="major">
             <Select v-model="searchForm.major">
               <Option v-for="(item,index) in majorList" :key="index" :value="item.id">{{item.name}}</Option>
             </Select>
           </FormItem>
           </Col>
-          <Col span="5">
+          <Col span="4">
           <FormItem label="人员类型：" prop="userType">
             <Select v-model="searchForm.userType">
               <Option v-for="(item,index) in typeList" :key="index" :value="item.id">{{item.name}}</Option>
             </Select>
           </FormItem>
           </Col>
-          <Col span="5">
+          <Col span="4">
           <FormItem label="账号状态：" prop="userStatus">
             <Select v-model="searchForm.userStatus">
               <Option v-for="(item,index) in statusList" :key="index" :value="item.id">{{item.name}}</Option>
@@ -643,7 +643,6 @@ export default {
   },
   created() {
     this.getUser();
-    console.log(formatDateTime());
   }
 };
 </script>
@@ -656,11 +655,6 @@ export default {
      background #f6d9d0
    .table-status-3
      background #e9eaec
- .big-label
-   .ivu-form-item-label
-     width 100px !important
-   .ivu-form-item-content
-     margin-left 100px !important
  .title-bar
    font-size 16px
    color #464C5B

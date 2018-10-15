@@ -137,6 +137,7 @@ export default {
   },
   mounted() {
     this.setBreadCrumb(this.$route);
+    // console.log(this.$store.state.loading);
   },
   methods: {
     ...mapMutations({
