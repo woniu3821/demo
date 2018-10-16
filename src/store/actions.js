@@ -24,7 +24,8 @@ import {
   GET_SECURITY,
   CHECK_CODE,
   GET_CODE,
-  HAS_CODE
+  HAS_CODE,
+  CHECK_ADMIN_PHONE
 } from "./types";
 
 const actions = {
@@ -109,6 +110,9 @@ const actions = {
   },
   [GET_SECURITY]({ commit }, params) {
     return fetch("/user/getTenantSecurityType", params, "post");
+  },
+  [CHECK_ADMIN_PHONE]({ commit }, params) {
+    return fetch("/user/checkAdminHasBoundPhoneEmail", params, "post");
   },
   [GET_CODE]({ commit }, params) {
     return fetch("/user/getValidationCode", params, "post");

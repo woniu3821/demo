@@ -182,16 +182,20 @@
         </ButtonGroup>
       </div>
     </Modal>
-    
   </div>
 </template>
 
 <script>
 import { mapActions, mapMutations } from "vuex";
 import { formatDateTime } from "@/utils/utils";
-import { pageMixins, listMixins, listMixins2 } from "@/utils/mixins.js";
+import {
+  pageMixins,
+  listMixins,
+  listMixins2,
+  codeMixins
+} from "@/utils/mixins.js";
 export default {
-  mixins: [pageMixins, listMixins, listMixins2],
+  mixins: [pageMixins, listMixins, listMixins2, codeMixins],
   data() {
     const _this = this;
     return {
@@ -296,7 +300,11 @@ export default {
                     },
                     class: "hasSplit",
                     on: {
-                      click: () => {
+                      click: async () => {
+                        let check = await this.checkSecurity();
+                        if (check !== 0) {
+                          return;
+                        }
                         this.$router.push({
                           name: "add-user",
                           params: { tag: "编辑用户", userType }
@@ -314,7 +322,7 @@ export default {
                       color: "#2D8CF0"
                     },
                     on: {
-                      click: () => {
+                      click: async () => {
                         this.$router.push({
                           name: "user-info-detail",
                           params: { userType }
@@ -419,33 +427,33 @@ export default {
         if (!valid) {
           return;
         }
-      });
-      this.setUserPasswd({
-        ...this.calcTableList(),
-        ...this.formPass
-      })
-        .then(res => {
-          if (res.code == 0) {
+        this.setUserPasswd({
+          ...this.calcTableList(),
+          ...this.formPass
+        })
+          .then(res => {
+            if (res.code == 0) {
+              this.modal2 = false;
+              this.showMsg({
+                type: "success",
+                content: "重置密码成功！"
+              });
+              this.getUser();
+            } else {
+              this.showMsg({
+                type: "error",
+                content: "重置密码失败！管理员密码不会被重置"
+              });
+            }
+          })
+          .catch(err => {
             this.modal2 = false;
             this.showMsg({
-              type: "success",
-              content: "重置密码成功！"
-            });
-            this.getUser();
-          } else {
-            this.showMsg({
               type: "error",
-              content: "重置密码失败！管理员密码不会被重置"
+              content: err || "重置密码失败！管理员密码不会被重置"
             });
-          }
-        })
-        .catch(err => {
-          this.modal2 = false;
-          this.showMsg({
-            type: "error",
-            content: err || "重置密码失败！管理员密码不会被重置"
           });
-        });
+      });
     },
     setStatus() {
       if (this.setStatusRadio == 2) {
@@ -600,7 +608,11 @@ export default {
         }
       }
     },
-    handelerBtn(tag) {
+    async handelerBtn(tag) {
+      let check = await this.checkSecurity();
+      if (check !== 0) {
+        return;
+      }
       this.btnTag = tag;
       this.modal = true;
     },
@@ -634,7 +646,11 @@ export default {
           break;
       }
     },
-    toAdd(userType) {
+    async toAdd(userType) {
+      let check = await this.checkSecurity();
+      if (check !== 0) {
+        return;
+      }
       this.$router.push({
         name: "add-user",
         params: { tag: "新增用户", userType }

@@ -75,7 +75,7 @@
       </table>
     </Row>
     <Row class="fixb">
-        <Button size="large" :to="{name: 'add-user',params: { tag: '编辑用户', userType:type }}" class="btn-r" type="primary">编辑</Button>
+        <Button size="large" @click="toEdit" class="btn-r" type="primary">编辑</Button>
         <Button size="large" @click="modal2=true">重设密码</Button>
     </Row>
     <Modal @on-visible-change="modal2Change" v-model="modal2" width="500" title="重设密码">
@@ -109,9 +109,11 @@
 </template>
 
 <script>
+import { codeMixins } from "@/utils/mixins.js";
 import { mapGetters } from "vuex";
 export default {
   components: {},
+  mixins: [codeMixins],
   data() {
     return {
       modal2: false,
@@ -134,6 +136,16 @@ export default {
     }
   },
   methods: {
+    async toEdit() {
+      let check = await this.checkSecurity();
+      if (check !== 0) {
+        return;
+      }
+      this.$router.push({
+        name: "add-user",
+        params: { tag: "编辑用户", userType: this.type }
+      });
+    },
     setPass() {},
     modal2Change() {},
     // ...mapActions({

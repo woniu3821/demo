@@ -1,12 +1,19 @@
 // import axios from "@/utils/axios";
 
 const state = {
-  WEATHER: "初始信息2"
+  phoneObj: {
+    show: false,
+    cellPhone: ""
+  }
 };
 
 const getters = {};
 
-const mutations = {};
+const mutations = {
+  SET_PHONE(state, data) {
+    state.phoneObj = data;
+  }
+};
 
 const actions = {};
 

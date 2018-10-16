@@ -28,6 +28,8 @@ export const ADD_USER = "ADD_USER"; //新增用户
 
 // 安全设置
 export const GET_SECURITY = "GET_SECURITY"; //获取租户安全设置
+export const CHECK_ADMIN_PHONE = "CHECK_ADMIN_PHONE"; //检测admin是否绑定邮箱或者手机号
 export const GET_CODE = "GET_CODE"; //获取验证码 params:{cellphone:string}
 export const CHECK_CODE = "CHECK_CODE"; //验证验证码 params:{cellphone:string，code:string}
 export const HAS_CODE = "HAS_CODE"; //是否已经有验证码 params:{cellphone:string}
+export const SET_PHONE = "SET_PHONE"; //是否已经有验证码 params:{cellphone:string}

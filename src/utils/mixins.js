@@ -1,5 +1,5 @@
-import { mapActions } from "vuex";
-import { isArray } from "@/utils/utils";
+import { mapActions, mapMutations } from "vuex";
+import { isArray, newWin } from "@/utils/utils";
 export const pageMixins = {
   data() {
     return { pageInfo: { pageNumber: 1, pageSize: 10, totalSize: 0 } };
@@ -75,4 +75,38 @@ export const listMixins2 = {
   }
 };
 
-export const codeMixins = {};
+export const codeMixins = {
+  methods: {
+    ...mapActions([
+      "GET_SECURITY",
+      "GET_CODE",
+      "CHECK_CODE",
+      "HAS_CODE",
+      "CHECK_ADMIN_PHONE"
+    ]),
+    async checkSecurity(...args) {
+      let data = await this.GET_SECURITY();
+      if (data.securityType == 0) {
+        return Promise.resolve(0);
+      } else {
+        let data = await this.CHECK_ADMIN_PHONE();
+        if (data.datas && data.datas.optCount === 1 && data.datas.id == null) {
+          //没有手机号
+          this.$Modal.confirm({
+            title: "完善信息",
+            content: "系统检测到您还没有绑定手机号，请先绑定手机号再执行此操作",
+            okText: "去绑定",
+            onOk: () => {
+              newWin("/personCenter/bind_cellphone/index.html#!/");
+            }
+          });
+        } else {
+          this.$store.commit("userInfo/SET_PHONE", {
+            show: true,
+            cellPhone: data.datas.id
+          });
+        }
+      }
+    }
+  }
+};

@@ -45,6 +45,7 @@
         <!-- <keep-alive> -->
         <router-view></router-view>
         <!-- </keep-alive> -->
+         <send-modal></send-modal>
       </div>
     </div>
   </section>

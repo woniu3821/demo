@@ -12,7 +12,12 @@ const instance = axios.create({
   headers: {
     "Content-Type": "application/json",
     "X-Requested-With": "XMLHttpRequest",
-    wecSchoolId: 1019429679435008
+    wecSchoolId: 1019429679435008,
+    wecUserInfo: JSON.stringify({
+      userAccount: "123123",
+      userName: "admin1",
+      userId: "72786"
+    })
   }
   // ,
   // withCredentials: true

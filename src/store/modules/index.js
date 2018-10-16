@@ -1,4 +1,4 @@
-import userInfo from "./userInfo";
+import userInfo from "./userInfo.js";
 export default {
   userInfo: userInfo
 };

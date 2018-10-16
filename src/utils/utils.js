@@ -112,3 +112,10 @@ export const formatDateTime = inputTime => {
   second = second < 10 ? "0" + second : second;
   return y + "-" + m + "-" + d + " " + h + ":" + minute + ":" + second;
 };
+export const newWin = url => {
+  let prefix =
+    location.origin.indexOf("localhost") > 0
+      ? "http://wectest3.wisedu.com"
+      : "";
+  window.location.href = prefix + url;
+};
