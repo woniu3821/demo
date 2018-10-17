@@ -113,7 +113,8 @@ export default {
           })
             .then(res => {
               if (res.code == 0 && res.datas.optCount === 0) {
-                this.phoneObj.show = false;
+                this.phoneObj.show = false; //严格模式下会报错
+                this.$store.commit("userInfo/CONTINUE", true);
                 this.showMsg({
                   type: "success",
                   content: "验证成功!"
@@ -136,9 +137,7 @@ export default {
       });
     }
   },
-  mounted() {
-    console.log(this.phoneObj);
-  },
+  mounted() {},
   beforeDestroy() {
     clearTimeout(this.timer);
   }

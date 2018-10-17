@@ -76,11 +76,11 @@
     </Row>
     <Row class="fixb">
         <Button size="large" @click="toEdit" class="btn-r" type="primary">编辑</Button>
-        <Button size="large" @click="modal2=true">重设密码</Button>
+        <Button size="large" @click="toChangePass">重设密码</Button>
     </Row>
-    <Modal @on-visible-change="modal2Change" v-model="modal2" width="500" title="重设密码">
+    <Modal @on-visible-change="modal2Change" v-model="modal2" width="500"  title="重设密码">
       <Alert type="warning" show-icon>管理员密码不会被重置</Alert>
-      <Form class="mrt-20" :label-width="80" ref="formPass"  :model="formPass">
+      <Form class="mrt-20" :label-width="80" ref="formPass" :rules="formPassRules"  :model="formPass">
         <FormItem required label="密码策略" prop="passwdModiMethod">
           <RadioGroup v-model="formPass.passwdModiMethod">
             <Radio label="1">
@@ -94,8 +94,8 @@
         <FormItem prop="newPassWd" :rules="[{required: true, message: '密码不能为空', trigger: 'blur'},{ type: 'string', max: 20, message: '密码不能超过80字符', trigger: 'blur' }]" label="固定值">
           <Input v-model.trim="formPass.newPassWd" :placeholder="formPass.passwdModiMethod==1?'请输入固定值密码':'身份证号码为空的账户密码，将会重置为此固定值'"></Input>
         </FormItem>
-        <FormItem prop="mobile"  label="手机号">
-          <Input v-model.trim="formPass.mobilePhone" placeholder="请输入手机号"></Input>
+        <FormItem prop="cellPhone"  label="手机号">
+          <Input v-model.trim="formPass.cellPhone" placeholder="请输入手机号"></Input>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -110,7 +110,7 @@
 
 <script>
 import { codeMixins } from "@/utils/mixins.js";
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 export default {
   components: {},
   mixins: [codeMixins],
@@ -121,33 +121,112 @@ export default {
         passwdModiMethod: "1",
         adminPassWd: "",
         newPassWd: "",
-        mobilePhone: ""
+        cellPhone: ""
       },
       type: this.$route.params.userType //1 学生 2教职工
     };
   },
   computed: {
     // ...mapState(["userDetail"]),
-    ...mapGetters(["userDetail"])
+    ...mapGetters(["userDetail"]),
+    formPassRules() {
+      return {
+        cellPhone: [
+          {
+            required: true,
+            trigger: "blur",
+            message: "请输入手机号"
+          },
+          {
+            message: "请输入正确的手机号",
+            trigger: "blur",
+            pattern: /^1[3456789]\d{9}$/
+          }
+        ]
+      };
+    }
   },
   watch: {
-    "userDetail.mobilePhone": function(now) {
-      this.formPass.mobilePhone = now;
+    "userDetail.mobilePhone": {
+      handler: function(now) {
+        this.formPass.cellPhone = now;
+      },
+      immediate: true
     }
   },
   methods: {
-    async toEdit() {
-      let check = await this.checkSecurity();
-      if (check !== 0) {
-        return;
-      }
-      this.$router.push({
-        name: "add-user",
-        params: { tag: "编辑用户", userType: this.type }
+    ...mapActions(["setUserPasswd", "showMsg"]),
+    toChangePass() {
+      this.checkSecurity()
+        .then(() => {
+          this.modal2 = true;
+        })
+        .catch(err => {
+          throw new Error(err);
+        });
+    },
+    toEdit() {
+      this.checkSecurity()
+        .then(() => {
+          this.$router.push({
+            name: "add-user",
+            params: { tag: "编辑用户", userType: this.type }
+          });
+        })
+        .catch(err => {
+          throw new Error(err);
+        });
+    },
+    setPass() {
+      this.$refs.formPass.validate(validate => {
+        if (validate) {
+          let obj = {
+            optType: "1",
+            userIds: [
+              {
+                userType: this.userDetail.userType,
+                wid: this.userDetail.wid,
+                userWid: this.userDetail.userWid,
+                userId: this.userDetail.userId,
+                cellPhone: this.formPass.cellPhone
+              }
+            ],
+            passwdModiMethod: this.formPass.passwdModiMethod,
+            adminPassWd: "",
+            newPassWd: this.formPass.newPassWd
+          };
+          this.setUserPasswd(obj)
+            .then(res => {
+              if (res.code == 0) {
+                this.modal2 = false;
+                // this.formPass.cellPhone = "";
+                this.showMsg({
+                  type: "success",
+                  content: "重置密码成功！"
+                });
+              } else {
+                this.showMsg({
+                  type: "error",
+                  content: "重置密码失败！管理员密码不会被重置"
+                });
+              }
+            })
+            .catch(err => {
+              this.modal2 = false;
+              this.showMsg({
+                type: "error",
+                content: err || "重置密码失败！管理员密码不会被重置"
+              });
+            });
+        }
       });
     },
-    setPass() {},
-    modal2Change() {},
+    modal2Change(value) {
+      if (!value) {
+        this.formPass.passwdModiMethod = "1";
+        this.formPass.newPassWd = "";
+      }
+    },
     // ...mapActions({
     //   switchLang: "fresh_weather"
     // }),

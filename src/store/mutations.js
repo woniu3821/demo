@@ -10,6 +10,9 @@ export default {
   setBreadCrumb(state, route) {
     state.breadCrumbList = getBreadCrumbList(route, state.homeRoute);
   },
+  changeLoading(state, data) {
+    state.loading = data;
+  },
   [DEMO_FRESH_WEATHER](state, payload) {
     state.WEATHER = `远程返回：${payload.data.showapi_res_error}`;
   },

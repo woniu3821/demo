@@ -47,14 +47,14 @@ export const getHomeRoute = routers => {
 
 export const fetch = (url, data = {}, method = "get", loading = true) => {
   return new Promise((resolve, reject) => {
-    if (loading) store.state.loading = true;
+    if (loading) store.commit("changeLoading", true);
     if (method == "get") {
       axios
         .get(url, {
           params: { ...data }
         })
         .then(res => {
-          store.state.loading = false;
+          store.commit("changeLoading", false);
           if (res.status == 200 && res.data.code == 0) {
             resolve(res.data);
           } else {
@@ -63,13 +63,13 @@ export const fetch = (url, data = {}, method = "get", loading = true) => {
           }
         })
         .catch(err => {
-          store.state.loading = false;
+          store.commit("changeLoading", false);
           reject(err);
         });
     } else {
       axios({ method, url, data })
         .then(res => {
-          store.state.loading = false;
+          store.commit("changeLoading", false);
           if (res.status == 200 && res.data.code == 0) {
             resolve(res.data);
           } else {
@@ -78,7 +78,7 @@ export const fetch = (url, data = {}, method = "get", loading = true) => {
           }
         })
         .catch(err => {
-          store.state.loading = false;
+          store.commit("changeLoading", false);
           reject(err);
         });
     }

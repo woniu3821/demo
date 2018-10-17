@@ -11,7 +11,7 @@
           <Input v-model="formItem.userId" :placeholder="type==2?'请输入教职工工号':'请输入学生学号（新生可输入考生号）'"></Input>
         </FormItem>
         <FormItem label="姓名" prop="name">
-          <Input v-model="formItem.name" placeholder="姓名，1~20个汉字"></Input>
+          <Input v-model="formItem.name" placeholder="姓名，（1~40个字符）"></Input>
         </FormItem>
         <FormItem label="性别" prop="sexId">
           <RadioGroup v-model="formItem.sexId">
@@ -29,8 +29,9 @@
           </Select>
         </FormItem>
         <FormItem label="所属部门/院系" prop="deptId">
-          <Select v-model="formItem.deptId" @on-change="changeDeptId" placeholder="请选择所属部门/院系" filterable>
-           <Option v-for="(item,index) in deptList" :key="index" :value="item.id">{{item.name}}</Option>
+          <Select @on-change="changeDeptId" :class="{place:formItem.deptId_DISPLAY}" :placeholder="formItem.deptId_DISPLAY?formItem.deptId_DISPLAY:'请选择所属部门/院系'" filterable>
+            <Tree :data="deptList" @on-select-change="treeChange" :load-data="loadData" :render="renderContent"></Tree>
+           <!-- <Option v-for="(item,index) in transDeptList" :key="index" :value="item.id">{{item.name}}</Option> -->
           </Select>
         </FormItem>
         <FormItem v-show="type==1" prop="majorId" label="专业" >
@@ -279,6 +280,45 @@ export default {
       "GET_USER_TEACH",
       "GET_USER_SEX"
     ]),
+    treeChange(value) {
+      console.log(value);
+    },
+    renderContent(h, { root, node, data }) {
+      return h(
+        "Option",
+        {
+          style: {
+            display: "inline-block",
+            margin: 0
+          },
+          props: {
+            value: data.value
+          }
+        },
+        data.title
+      );
+    },
+    transDeptList(data) {
+      //转化depList数据
+      let arr = [];
+      for (let { isParent, name, pId, id } of data) {
+        let obj = {
+          title: name,
+          value: id
+        };
+        if (isParent === 1) {
+          obj.loading = false;
+          obj.children = [];
+        }
+        arr.push(obj);
+      }
+      return arr;
+    },
+    loadData(item, callback) {
+      this.GET_USER_DEPT_OLD({ id: item.id }).then(res => {
+        callback(this.transDeptList(res.datas.rows));
+      });
+    },
     cancelBtn() {
       this.$Modal.confirm({
         title: "取消",
@@ -289,6 +329,7 @@ export default {
       });
     },
     changeDeptId(now) {
+      this.formItem.deptId = now;
       if (this.type == 2) {
         return;
       }
@@ -413,7 +454,7 @@ export default {
         });
       this.GET_USER_DEPT_OLD()
         .then(res => {
-          this.deptList = res.datas.rows;
+          this.deptList = this.transDeptList(res.datas.rows);
           if (this.$route.params.tag == "编辑用户") {
             this.getMajorList(this.userDetail.deptId);
           }
@@ -439,7 +480,7 @@ export default {
       this.GET_USER_DEPT_TEACH()
         .then(res => {
           //获取老师部门
-          this.deptList = res.datas.rows;
+          this.deptList = this.transDeptList(res.datas.rows);
         })
         .catch(err => {
           this.showMsg({
@@ -453,4 +494,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.place
+  ::-webkit-input-placeholder
+    color #515a6e
 </style>

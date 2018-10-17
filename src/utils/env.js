@@ -8,7 +8,7 @@ let baseUrl = "";
 let baseImgPath = "";
 
 if (process.env.NODE_ENV === "development") {
-  baseUrl = "wec-user-mngt/";
+  baseUrl = "/wec-user-mngt";
   baseImgPath = "";
 } else {
   baseUrl = "";

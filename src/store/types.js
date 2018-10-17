@@ -33,3 +33,4 @@ export const GET_CODE = "GET_CODE"; //获取验证码 params:{cellphone:string}
 export const CHECK_CODE = "CHECK_CODE"; //验证验证码 params:{cellphone:string，code:string}
 export const HAS_CODE = "HAS_CODE"; //是否已经有验证码 params:{cellphone:string}
 export const SET_PHONE = "SET_PHONE"; //是否已经有验证码 params:{cellphone:string}
+export const CONTINUE = "CONTINUE"; //触发继续操作

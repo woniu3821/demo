@@ -1,5 +1,7 @@
+const BUILD = process.env.NODE_ENV == "production";
+
 module.exports = {
-  baseUrl: "./",
+  baseUrl: BUILD ? "/wec-user-mngt" : "",
   outputDir: "../webapp",
   pages: {
     index: "src/main.js"

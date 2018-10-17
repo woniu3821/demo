@@ -1,4 +1,4 @@
-import { mapActions, mapMutations } from "vuex";
+import { mapActions, mapMutations, mapGetters, mapState } from "vuex";
 import { isArray, newWin } from "@/utils/utils";
 export const pageMixins = {
   data() {
@@ -76,6 +76,7 @@ export const listMixins2 = {
 };
 
 export const codeMixins = {
+  computed: {},
   methods: {
     ...mapActions([
       "GET_SECURITY",
@@ -84,29 +85,48 @@ export const codeMixins = {
       "HAS_CODE",
       "CHECK_ADMIN_PHONE"
     ]),
-    async checkSecurity(...args) {
-      let data = await this.GET_SECURITY();
-      if (data.securityType == 0) {
-        return Promise.resolve(0);
-      } else {
-        let data = await this.CHECK_ADMIN_PHONE();
-        if (data.datas && data.datas.optCount === 1 && data.datas.id == null) {
-          //没有手机号
-          this.$Modal.confirm({
-            title: "完善信息",
-            content: "系统检测到您还没有绑定手机号，请先绑定手机号再执行此操作",
-            okText: "去绑定",
-            onOk: () => {
-              newWin("/personCenter/bind_cellphone/index.html#!/");
+    checkSecurity() {
+      return new Promise(async (resolve, reject) => {
+        try {
+          let data = await this.GET_SECURITY();
+          if (data.securityType == 0) {
+            resolve();
+          } else {
+            let data = await this.CHECK_ADMIN_PHONE();
+            if (
+              data.datas &&
+              data.datas.optCount === 1 &&
+              data.datas.id == null
+            ) {
+              //没有手机号
+              this.$Modal.confirm({
+                title: "完善信息",
+                content:
+                  "系统检测到您还没有绑定手机号，请先绑定手机号再执行此操作",
+                okText: "去绑定",
+                onOk: () => {
+                  newWin("/personCenter/bind_cellphone/index.html#!/");
+                }
+              });
+            } else {
+              this.$store.commit("userInfo/SET_PHONE", {
+                show: true,
+                cellPhone: data.datas.id
+              });
+              //改变continue状态监听变化触发promise实例的then方法
+              this.$store.commit("userInfo/CONTINUE", false);
+              this.$store.watch(
+                state => state.userInfo.continue,
+                () => {
+                  if (this.$store.state.userInfo.continue) resolve();
+                }
+              );
             }
-          });
-        } else {
-          this.$store.commit("userInfo/SET_PHONE", {
-            show: true,
-            cellPhone: data.datas.id
-          });
+          }
+        } catch (err) {
+          reject(err);
         }
-      }
+      });
     }
   }
 };

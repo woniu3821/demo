@@ -300,16 +300,18 @@ export default {
                     },
                     class: "hasSplit",
                     on: {
-                      click: async () => {
-                        let check = await this.checkSecurity();
-                        if (check !== 0) {
-                          return;
-                        }
-                        this.$router.push({
-                          name: "add-user",
-                          params: { tag: "编辑用户", userType }
-                        });
-                        this.setUserInfo(userInfo);
+                      click: () => {
+                        this.checkSecurity()
+                          .then(() => {
+                            this.$router.push({
+                              name: "add-user",
+                              params: { tag: "编辑用户", userType }
+                            });
+                            this.setUserInfo(userInfo);
+                          })
+                          .catch(err => {
+                            throw new Error(err);
+                          });
                       }
                     }
                   },
@@ -608,13 +610,15 @@ export default {
         }
       }
     },
-    async handelerBtn(tag) {
-      let check = await this.checkSecurity();
-      if (check !== 0) {
-        return;
-      }
-      this.btnTag = tag;
-      this.modal = true;
+    handelerBtn(tag) {
+      this.checkSecurity()
+        .then(() => {
+          this.btnTag = tag;
+          this.modal = true;
+        })
+        .catch(err => {
+          throw new Error(err);
+        });
     },
     handelerToBtn() {
       //匹配对应请求
@@ -646,16 +650,23 @@ export default {
           break;
       }
     },
-    async toAdd(userType) {
-      let check = await this.checkSecurity();
-      if (check !== 0) {
-        return;
-      }
-      this.$router.push({
-        name: "add-user",
-        params: { tag: "新增用户", userType }
-      });
+    toAdd(userType) {
+      this.checkSecurity()
+        .then(() => {
+          this.$router.push({
+            name: "add-user",
+            params: { tag: "新增用户", userType }
+          });
+        })
+        .catch(err => {
+          throw new Error(err);
+        });
     }
+  },
+  mounted() {
+    // this.$store.watch(function(state,getter){
+    // console.log(state,getter)
+    // },function(){});
   },
   created() {
     this.getUser();
