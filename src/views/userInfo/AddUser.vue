@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div class="userInfoBox">
+     <div v-if="userTypeName" class="top-info">{{userTypeName}}</div>
+     <Spin size="large" fix v-if="$store.state.loading"></Spin>
+      <send-modal></send-modal>
     <div class="title-bar">
     {{$route.params.tag}}（{{userTypeName}}）
     </div>
@@ -75,8 +78,9 @@
       </Form>
       </Col>
     </Row>
-    <Row class="line"></Row>
-    <Row>
+    
+    <Row class="fixb">
+      <Row class="line"></Row>
       <Button size="large" class="btn-r" @click="addUser" type="primary">确认</Button>
       <Button size="large" @click="cancelBtn">取消</Button>
     </Row>
@@ -315,7 +319,7 @@ export default {
       return arr;
     },
     loadData(item, callback) {
-      this.GET_USER_DEPT_OLD({ id: item.id }).then(res => {
+      this.GET_USER_DEPT_OLD({ type: this.type, pId: item.id }).then(res => {
         callback(this.transDeptList(res.datas.rows));
       });
     },
@@ -337,6 +341,22 @@ export default {
       this.formItem.classId = "";
       let value = now || "";
       this.getMajorList(value);
+    },
+    getDept(obj) {
+      this.GET_USER_DEPT_OLD({ type: this.type, ...obj })
+        .then(res => {
+          //获取部门/院系
+          this.deptList = this.transDeptList(res.datas.rows);
+          if (this.$route.params.tag == "编辑用户") {
+            this.getMajorList(this.userDetail.deptId);
+          }
+        })
+        .catch(err => {
+          this.showMsg({
+            type: "error",
+            content: err || "获取部门/院系失败！"
+          });
+        });
     },
     getMajorList(value) {
       let obj = {
@@ -364,6 +384,7 @@ export default {
     },
     getClassList(now) {
       let value = now || "";
+      if (!value) return;
       let obj = {
         searchValue: JSON.stringify([
           { name: "majorId", value: value, builder: "equal", linkOpt: "AND" }
@@ -420,6 +441,7 @@ export default {
     }
   },
   created() {
+    this.getDept({ pId: "" });
     this.GET_STU_CATEGORY()
       .then(res => {
         this.stuCategoryList = res.datas.rows;
@@ -440,7 +462,6 @@ export default {
           content: err || "获取性别失败！"
         });
       });
-
     if (this.type == 1) {
       this.GET_USER_STU()
         .then(res => {
@@ -450,19 +471,6 @@ export default {
           this.showMsg({
             type: "error",
             content: err || "获取学生类型失败！"
-          });
-        });
-      this.GET_USER_DEPT_OLD()
-        .then(res => {
-          this.deptList = this.transDeptList(res.datas.rows);
-          if (this.$route.params.tag == "编辑用户") {
-            this.getMajorList(this.userDetail.deptId);
-          }
-        })
-        .catch(err => {
-          this.showMsg({
-            type: "error",
-            content: err || "获取院系失败！"
           });
         });
     } else {
@@ -475,17 +483,6 @@ export default {
           this.showMsg({
             type: "error",
             content: err || "获取老师类型失败！"
-          });
-        });
-      this.GET_USER_DEPT_TEACH()
-        .then(res => {
-          //获取老师部门
-          this.deptList = this.transDeptList(res.datas.rows);
-        })
-        .catch(err => {
-          this.showMsg({
-            type: "error",
-            content: err || "获取老师部门失败！"
           });
         });
     }

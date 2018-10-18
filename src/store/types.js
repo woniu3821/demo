@@ -1,9 +1,4 @@
-// export const INFOMSG = "INFOMSG";
-// export const SETOUTFIT = "SETOUTFIT";
-// export const CREATED = "CREATED";
-export const DEMO_FRESH_WEATHER = "DEMO_FRESH_WEATHER";
 export const SET_USERINFO_DETAIL = "SET_USERINFO_DETAIL"; //设置用户信息
-export const MENU_UPDATA = "MENU_UPDATA"; //面包屑更新
 export const SET_USER_TYPE = "setUserType"; //用户类型
 export const GET_TEACHER_INFO = "GET_TEACHER_INFO"; //获取教职工信息
 export const GET_USER_INFO = "getUserInfo"; //获取用户表格信息
@@ -24,7 +19,7 @@ export const EXPORT_USER = "exportUser"; //导出用户
 export const SET_USER_STATUS = "setUserStatus"; //设置用户状态
 export const SET_USER_PASSWD = "setUserPasswd"; //设置用户密码
 export const ADD_USER = "ADD_USER"; //新增用户
-// export const GET_USER_TABLE = "GET_USER_TABLE"; //获取表格数据
+export const GET_ADMIN_WID = "GET_ADMIN_WID"; //获取管理员wid
 
 // 安全设置
 export const GET_SECURITY = "GET_SECURITY"; //获取租户安全设置

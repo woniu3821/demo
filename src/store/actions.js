@@ -1,8 +1,6 @@
 import { fetch } from "@/utils/utils";
 import { Message } from "iview";
 import {
-  // DEMO_FRESH_WEATHER,
-  GET_TEACHER_INFO,
   GET_USER_INFO,
   GET_USER_DEPT,
   GET_USER_MAJOR,
@@ -25,29 +23,17 @@ import {
   CHECK_CODE,
   GET_CODE,
   HAS_CODE,
-  CHECK_ADMIN_PHONE
+  CHECK_ADMIN_PHONE,
+  GET_ADMIN_WID
 } from "./types";
 
 const actions = {
-  // async [DEMO_FRESH_WEATHER]({ commit }) {
-  //   let pms = {
-  //     "showapi_appid ": "59166",
-  //     "showapi_sign ": "7e6cee7e3046484fa4bd15869b0640fb",
-  //     "showapi_timestamp ": "20180314161610",
-  //     "city ": "南京"
-  //   };
-  //   const data = await axios.post("http://route.showapi.com/104-29", pms);
-  //   commit(DEMO_FRESH_WEATHER, data);
-  // },
   showMsg({ commit }, data) {
     try {
       Message[data.type || "success"]({ content: data.content });
     } catch (err) {
       console.error("请输入正确类型");
     }
-  },
-  [GET_TEACHER_INFO]({ commit }, params) {
-    return fetch("statics/meta-info/user_addOrUpdateTeacher.json", params);
   },
   [GET_USER_INFO]({ commit }, params) {
     return fetch("/userv2/getUserByCondition", params, "post");
@@ -56,7 +42,12 @@ const actions = {
     return fetch("/userv2/getUserDept", params, "post");
   },
   [GET_USER_DEPT_OLD]({ commit }, params) {
-    return fetch("/code/stuDept", params, "post");
+    //获取部门院系
+    return fetch(
+      params.type == 1 ? "/code/stuDept" : "/code/dept",
+      params,
+      "post"
+    );
   },
   [GET_USER_DEPT_TEACH]({ commit }, params) {
     //老师部门
@@ -119,6 +110,9 @@ const actions = {
   },
   [CHECK_CODE]({ commit }, params) {
     return fetch("/user/checkValidationCode", params, "post");
+  },
+  [GET_ADMIN_WID]({ commit }, params) {
+    return fetch("/userv2/getAmindWid", params, "post");
   },
   [HAS_CODE]({ commit }, params) {
     return fetch("/user/alreadyHasValidationCode", params, "post");

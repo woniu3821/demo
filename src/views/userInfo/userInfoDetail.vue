@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div class="userInfoBox">
+     <div v-if="userTypeName" class="top-info">{{userTypeName}}</div>
+     <Spin size="large" fix v-if="$store.state.loading"></Spin>
+      <send-modal></send-modal>
     <div class="title-bar">
       用户详情
     </div>
@@ -75,8 +78,9 @@
       </table>
     </Row>
     <Row class="fixb">
+       <Row class="line"></Row>
         <Button size="large" @click="toEdit" class="btn-r" type="primary">编辑</Button>
-        <Button size="large" @click="toChangePass">重设密码</Button>
+        <Button size="large" v-if="!$route.params.isAdmin" @click="toChangePass">重设密码</Button>
     </Row>
     <Modal @on-visible-change="modal2Change" v-model="modal2" width="500"  title="重设密码">
       <Alert type="warning" show-icon>管理员密码不会被重置</Alert>
@@ -128,7 +132,7 @@ export default {
   },
   computed: {
     // ...mapState(["userDetail"]),
-    ...mapGetters(["userDetail"]),
+    ...mapGetters(["userDetail", "userTypeName"]),
     formPassRules() {
       return {
         cellPhone: [
@@ -257,7 +261,4 @@ export default {
    .th
      background #f8f8f8
      width 120px
- .fixb
-   position absolute !important
-   bottom 20px
 </style>

@@ -1,10 +1,12 @@
 <template>
-  <div>
+  <div class="userInfoBox">
+      <Spin size="large" fix v-if="$store.state.loading"></Spin>
+      <send-modal></send-modal>
     <div class="title-bar">
-      查看用户信息<a href="">查看用户管理（旧版）</a>
+      查看用户信息<a href="https://wectest3.wisedu.com/smmp/index.html#!/20000">查看用户管理（旧版）</a>
     </div>
     <Row class="mrt-20">
-      <Form :model="searchForm" ref="searchForm" :label-width="75" label-position="right">
+      <Form @keydown.native.enter.prevent ="keyDownEvent" :model="searchForm" ref="searchForm" :label-width="75" label-position="right">
         <Row :gutter="15">
           <Col span="12">
           <FormItem label="搜索用户：" prop="searchContent">
@@ -186,8 +188,8 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from "vuex";
-import { formatDateTime } from "@/utils/utils";
+import { mapActions, mapMutations, mapGetters } from "vuex";
+import { formatDateTime, jsonParse } from "@/utils/utils";
 import {
   pageMixins,
   listMixins,
@@ -199,6 +201,7 @@ export default {
   data() {
     const _this = this;
     return {
+      adminWid: "", //管理员wid
       searchForm: {
         searchContent: "", //用户名、姓名、手机号
         major: "", //专业
@@ -327,7 +330,10 @@ export default {
                       click: async () => {
                         this.$router.push({
                           name: "user-info-detail",
-                          params: { userType }
+                          params: {
+                            userType,
+                            isAdmin: userInfo.wid === this.adminWid
+                          }
                         });
                         this.setUserInfo(userInfo);
                       }
@@ -394,8 +400,10 @@ export default {
       "delUser",
       "exportUser",
       "setUserStatus",
-      "setUserPasswd"
+      "setUserPasswd",
+      "GET_ADMIN_WID"
     ]),
+    keyDownEvent() {},
     ...mapMutations({
       setUserInfo: "SET_USERINFO_DETAIL"
     }),
@@ -628,15 +636,9 @@ export default {
           this.modal3 = true;
           break;
         case 2:
-          this.exportUser({
-            searchCondition: encodeURIComponent(
-              JSON.stringify(this.calcTableList())
-            )
-          })
-            .then(res => {
-              // console.log(res);
-            })
-            .catch(err => {});
+          window.location.href =
+            "wec-user-mngt/userv2/exportUser?searchCondition=" +
+            encodeURIComponent(JSON.stringify(this.calcTableList()));
           break;
         case 3:
           this.modal = false;
@@ -670,6 +672,16 @@ export default {
   },
   created() {
     this.getUser();
+    this.GET_ADMIN_WID()
+      .then(res => {
+        this.adminWid = res.datas.id;
+      })
+      .catch(err => {
+        this.showMsg({
+          type: "error",
+          content: err || "获取管理员wid失败！"
+        });
+      });
   }
 };
 </script>

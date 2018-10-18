@@ -53,7 +53,7 @@ export default {
       this.placement = isOverflow ? "right-start" : "right-end";
     },
     showChildren(item) {
-      return item.children && item.children.length > 0;
+      return item.children && item.children.length > 0 && !item.menuLeaf;
     },
     selfOrChildSelected(parentItem) {
       if (parentItem.key === this.activeName) {
@@ -97,56 +97,34 @@ export default {
 };
 </script>
 <style lang="stylus">
-.menu-collapsed {
-  padding-top: 10px;
-
-  .ivu-dropdown {
-    width: 100%;
-
-    .ivu-dropdown-rel a {
-      width: 100%;
-    }
-  }
-
-  .ivu-select-dropdown {
-    width: auto;
-  }
-
-  .collapsed-active {
-    background-color: #2d8cf0;
-    color: white;
-  }
-
-  .drop-down-active {
-    color: #2d8cf0;
-  }
-
-  .ivu-tooltip {
-    width: 100%;
-
-    .ivu-tooltip-rel {
-      width: 100%;
-    }
-
-    .ivu-tooltip-popper .ivu-tooltip-content {
-      .ivu-tooltip-arrow {
-        border-right-color: #fff;
-      }
-
-      .ivu-tooltip-inner {
-        background: #fff;
-        color: #495060;
-      }
-    }
-  }
-
-  a.drop-menu-a {
-    display: inline-block;
-    position: relative;
-    padding: 15px 15px;
-    width: 100%;
-    text-align: center;
-    color: #495060;
-  }
-}
+.menu-collapsed
+  padding-top 10px
+  .ivu-dropdown
+    width 100%
+    .ivu-dropdown-rel a
+      width 100%
+  .ivu-select-dropdown
+    width auto
+  .collapsed-active
+    background-color #2d8cf0
+    color white
+  .drop-down-active
+    color #2d8cf0
+  .ivu-tooltip
+    width 100%
+    .ivu-tooltip-rel
+      width 100%
+    .ivu-tooltip-popper .ivu-tooltip-content
+      .ivu-tooltip-arrow
+        border-right-color #fff
+      .ivu-tooltip-inner
+        background #fff
+        color #495060
+  a.drop-menu-a
+    display inline-block
+    position relative
+    padding 15px 15px
+    width 100%
+    text-align center
+    color #495060
 </style>

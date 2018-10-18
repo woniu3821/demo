@@ -1,6 +1,19 @@
-import { Message } from "iview";
 import env from "./env";
 import axios from "axios";
+let headers = {
+  "Content-Type": "application/json",
+  "X-Requested-With": "XMLHttpRequest"
+};
+if (process.env.NODE_ENV == "development") {
+  headers = Object.assign({}, headers, {
+    wecSchoolId: 1019429679435008,
+    wecUserInfo: JSON.stringify({
+      userAccount: "123123",
+      userName: "admin1",
+      userId: "72786"
+    })
+  });
+}
 const instance = axios.create({
   baseURL: env.baseUrl,
   timeout: 300000,
@@ -9,16 +22,7 @@ const instance = axios.create({
       return JSON.stringify(data);
     }
   ],
-  headers: {
-    "Content-Type": "application/json",
-    "X-Requested-With": "XMLHttpRequest",
-    wecSchoolId: 1019429679435008,
-    wecUserInfo: JSON.stringify({
-      userAccount: "123123",
-      userName: "admin1",
-      userId: "72786"
-    })
-  }
+  headers
   // ,
   // withCredentials: true
 });
@@ -32,17 +36,6 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   response => {
-    // 直接返回html的情况处理
-    if (response.headers["content-type"] === "text/htmlcharset=UTF-8") {
-      const href = window.location.href;
-      // window.location.href =
-      //   href.substring(0, href.lastIndexOf("/index.html")) + "/login.html";
-      return;
-    }
-    // const data = response.data;
-    // if (data && data.code !== '0') {
-    //   Message
-    // }
     return response;
   },
   error => Promise.resolve(error.response)

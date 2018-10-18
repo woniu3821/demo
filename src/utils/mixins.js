@@ -1,5 +1,5 @@
-import { mapActions, mapMutations, mapGetters, mapState } from "vuex";
-import { isArray, newWin } from "@/utils/utils";
+import { mapActions } from "vuex";
+import { newWin } from "@/utils/utils";
 export const pageMixins = {
   data() {
     return { pageInfo: { pageNumber: 1, pageSize: 10, totalSize: 0 } };
